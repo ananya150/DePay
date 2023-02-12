@@ -16,15 +16,23 @@ const getUserOp = async (to , value , data) => {
 
     const op = await getUnsignedUserOp(wallet , provider , factory , owner , to , value , data , entrypoint);
     op.paymasterAndData = paymaster;
-    const signedUserOp = await createSignedUserOp(op, entrypoint, provider , signer)
-    console.log(signedUserOp);
+    const signedUserOp = await signUserOp(op, entrypoint, provider , signer)
+
+    return signedUserOp
+    // console.log((signedUserOp));
 }
 
-getUserOp('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' , '0x' , '0x');
+const getContractAddress = async (factory , owner , provider) => {
 
+    const tempdata = "0x8cb84e18" + getPaddedString(owner , 64) + getPaddedString("0" , 64)
+    const address = await provider.call({
+        to: factory,
+        data: tempdata
+    })
+    return "0x" + address.substring(address.length - 40);
+}
 
-
-
+module.exports = {getUserOp , getContractAddress}
 
 
 
@@ -109,15 +117,6 @@ const estimateCreationGas = async (initCode , provider) => {
     return await provider.estimateGas({ to: deployerAddress, data: deployerCallData });
 }
 
-const getContractAddress = async (factory , owner , provider) => {
-
-    const tempdata = "0x8cb84e18" + getPaddedString(owner , 64) + getPaddedString("0" , 64)
-    const address = await provider.call({
-        to: factory,
-        data: tempdata
-    })
-    return "0x" + address.substring(address.length - 40);
-}
 
 const getUnsignedUserOp = async (wallet , provider ,factory, owner , to , value , data , entryPoint) => {
 
@@ -232,8 +231,7 @@ const signUserOpHash = async (userOpHash , signer) => {
 const signUserOp = async (userOp , entrypoint , provider , signer) => {
     const chainId = await provider.getNetwork().then(net => net.chainId);
     const userOpHash = await getUserOpHash(userOp , entrypoint , chainId);
-    console.log(userOpHash)
-    const signature = signUserOpHash(userOpHash , signer); 
+    const signature = await signUserOpHash(userOpHash , signer); 
     return Object.assign(Object.assign({}, userOp), { signature });
     }
 

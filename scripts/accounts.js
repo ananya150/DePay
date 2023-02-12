@@ -10,7 +10,6 @@ const getAccounts = async (index) => {
     return wallet
 }
 
-
 const DEPLOYER = async () => {
     return await getAccounts(0)
 }
@@ -19,8 +18,12 @@ const PAYMASTER = async () => {
     return await getAccounts(1)
 }
 
+const BUNDLER = async () => {
+    return await getAccounts(2);
+}
+
 const USER = async () => {
     return await getAccounts(10)
 }
 
-module.exports = {PROVIDER , DEPLOYER , PAYMASTER , USER}
+module.exports = {PROVIDER , DEPLOYER , PAYMASTER , BUNDLER ,  USER}
