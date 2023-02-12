@@ -1,14 +1,16 @@
-require("@nomiclabs/hardhat-ethers");
+const {abi} = require('../../artifacts/contracts/paymaster/SimplePaymaster.sol/SimplePaymaster.json')
+const { ethers } = require("hardhat");
 
+  
+const deposit = async (paymaster, signer , amount) => {
+  const paymasterContract = new ethers.Contract(paymaster , abi , signer);
+  await paymasterContract.deposit({value: ethers.utils.parseUnits(`${amount}`, "ether") });
+}
 
-const deploy_paymaster = async (entryPoint) => {
-    
-    const SimplePaymaster = await ethers.getContractFactory("SimplePaymaster");
-    const simplePaymaster = await SimplePaymaster.deploy(entryPoint);
-  
-    await simplePaymaster.deployed();
-    console.log(`SimplePaymaster deployed to ${simplePaymaster.address}`);
-    return simplePaymaster.address;
-  }
-  
-  module.exports = {deploy_paymaster}
+const getDeposit = async (paymaster , provider) => {
+  const paymasterContract = new ethers.Contract(paymaster , abi , provider);
+  const deposits = await paymasterContract.getDeposit();
+  return deposits;
+}
+
+module.exports = {deposit , getDeposit}
