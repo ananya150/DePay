@@ -13,7 +13,7 @@ const sendEth = async (signer , address , amount) => {
         // Convert currency unit from ether to wei
         value: ethers.utils.parseEther(amount)
     }
-    signer.sendTransaction(tx).then((txObj) => {
+    await signer.sendTransaction(tx).then((txObj) => {
         console.log(`tx hash is ${txObj.hash} `)
     })
 }

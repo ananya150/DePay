@@ -51,6 +51,9 @@ const main = async () => {
     /// transfer some eth to wallet from helper account
     await sendEth(Helper , idetails.wallet , '100');
 
+
+    console.log('-------------------------------------------------------------------------------------')
+    console.log('-------------------------------------------------------------------------------------')
     /// Get account details after setup
     const fetails = await accountDetails(User , factory , Provider)
     console.log('The wallet details after setup are')
