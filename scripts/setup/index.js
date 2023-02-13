@@ -1,6 +1,5 @@
 const fs = require('fs');
-const { ethers } = require("hardhat");
-const {deploy_entryPoint , deploy_factory , deploy_paymaster} = require('./contracts/depoy');
+const {deploy_entryPoint , deploy_factory , deploy_paymaster} = require('./depoy');
 
 const deploy = async () => {
     const entrypoint = await deploy_entryPoint();
@@ -12,4 +11,4 @@ const deploy = async () => {
     fs.writeFileSync('./.paymaster', paymaster);
 }
 
-deploy()
+module.exports = {deploy}

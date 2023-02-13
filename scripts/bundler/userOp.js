@@ -1,20 +1,20 @@
 const { ethers } = require("ethers");
 const utils = require("ethers/lib/utils");
 const fs = require('fs');
-const {PROVIDER , USER} = require('../accounts');
+const {PROVIDER , USER} = require('../general/accounts');
 
-const getUserOp = async (to , value , data) => {
+const getUserOp = async (calldata) => {
 
-    const paymaster = fs.readFileSync('../.paymaster').toString()
-    const entrypoint = fs.readFileSync('../.entrypoint').toString()
-    const factory = fs.readFileSync('../.factory').toString()
+    const paymaster = fs.readFileSync('../setup/.paymaster').toString()
+    const entrypoint = fs.readFileSync('../setup/.entrypoint').toString()
+    const factory = fs.readFileSync('../setup/.factory').toString()
 
     const signer = (await USER());
     const owner = signer.address;
     const provider = PROVIDER();
     const wallet = await getContractAddress(factory , owner , provider);
 
-    const op = await getUnsignedUserOp(wallet , provider , factory , owner , to , value , data , entrypoint);
+    const op = await getUnsignedUserOp(wallet , provider , factory , owner , calldata , entrypoint);
     op.paymasterAndData = paymaster;
     const signedUserOp = await signUserOp(op, entrypoint, provider , signer)
 
@@ -32,7 +32,7 @@ const getContractAddress = async (factory , owner , provider) => {
     return "0x" + address.substring(address.length - 40);
 }
 
-module.exports = {getUserOp , getContractAddress}
+module.exports = {getUserOp , getContractAddress , getNonce}
 
 
 
@@ -118,14 +118,14 @@ const estimateCreationGas = async (initCode , provider) => {
 }
 
 
-const getUnsignedUserOp = async (wallet , provider ,factory, owner , to , value , data , entryPoint) => {
+const getUnsignedUserOp = async (wallet , provider ,factory, owner , calldata, entryPoint) => {
 
     const UserOp = {}
 
     UserOp.sender = wallet;
     UserOp.nonce =  await getNonce(wallet , provider) ;
     UserOp.initCode = await getInitCode(wallet , factory , owner , "0" , provider);
-    UserOp.callData = getCallData(to , value , data );
+    UserOp.callData = calldata;
     UserOp.callGasLimit = await getCallGasLimit(entryPoint , wallet , UserOp.callData , provider);
     UserOp.verificationGasLimit = await getVerificationGasLinit(UserOp.initCode , provider);
     UserOp.preVerificationGas = getPreVerificationGas();

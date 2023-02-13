@@ -1,5 +1,7 @@
 const { ethers } = require("hardhat");
 
+// This scripts exports all the accounts needed for the account abstraction workflow
+
 const PROVIDER = () => {
     return new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545');
 }
@@ -11,11 +13,11 @@ const getAccounts = async (index) => {
 }
 
 const DEPLOYER = async () => {
-    return await getAccounts(0)
+    return await getAccounts(0);
 }
 
 const PAYMASTER = async () => {
-    return await getAccounts(1)
+    return await getAccounts(1);
 }
 
 const BUNDLER = async () => {
@@ -23,7 +25,11 @@ const BUNDLER = async () => {
 }
 
 const USER = async () => {
-    return await getAccounts(10)
+    return await getAccounts(10);
 }
 
-module.exports = {PROVIDER , DEPLOYER , PAYMASTER , BUNDLER ,  USER}
+const HELPER = async () => {
+    return await getAccounts(15);
+}
+
+module.exports = {PROVIDER , DEPLOYER , PAYMASTER , BUNDLER ,  USER , HELPER}  
