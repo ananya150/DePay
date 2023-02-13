@@ -1,11 +1,10 @@
 const fs = require('fs');
-const {deploy_entryPoint , deploy_factory , deploy_paymaster} = require('./deploy/deploy');
 const {PROVIDER , DEPLOYER , PAYMASTER , BUNDLER ,  USER , HELPER} = require('./accounts/account');
-const {deposit , getDeposit} = require('./paymaster/paymaster')
 const {getUserOp} = require('./bundler/userOp');
 const {handleOps} = require('./bundler/bundler')
 const {accountDetails} = require('./wallet/details')
 const {sendEth} = require('./accounts/functions')
+const {exec} = require('./wallet/func')
 
 const main = async () => {
 
@@ -16,48 +15,29 @@ const main = async () => {
     const Bundler = await BUNDLER();
 
     /// depoly the contracts
-    const entrypoint = await deploy_entryPoint();
-    const factory = await deploy_factory(entrypoint);
-    const paymaster = await deploy_paymaster(entrypoint);
+    const entrypoint = fs.readFileSync('./.entrypoint').toString();
+    const factory = fs.readFileSync('./.factory').toString();
+    const paymaster = fs.readFileSync('./.paymaster').toString();
     console.log('-------------------------------------------------------------------------------------')
     console.log('-------------------------------------------------------------------------------------')
 
-    fs.writeFileSync('./.entrypoint', entrypoint);
-    fs.writeFileSync('./.factory', factory);
-    fs.writeFileSync('./.paymaster', paymaster);
 
     /// Get account details before setup
     const idetails = await accountDetails(User , factory , Provider)
-    console.log('The wallet details before the setup are')
+    console.log('The wallet details before the transaction are')
     console.log(idetails)
     console.log('-------------------------------------------------------------------------------------')
     console.log('-------------------------------------------------------------------------------------')
 
 
-    /// deposit from paymaster
-    await deposit(paymaster , Paymaster , 1000);
-    totalPaymasterDeposits = await getDeposit(paymaster, Provider)
-    console.log(`Total paymaster deposits are ${ethers.utils.formatEther(totalPaymasterDeposits)} ethers`);
-    console.log('-------------------------------------------------------------------------------------')
-    console.log('-------------------------------------------------------------------------------------')
-
-
-    /// deploy the wallet 
-    const uop = await getUserOp('0x00000000' , entrypoint , factory , paymaster , Provider , User);
-    const hash = await handleOps(uop , entrypoint , Bundler )
-    console.log('-------------------------------------------------------------------------------------')
-    console.log('-------------------------------------------------------------------------------------')
-
-
-    /// transfer some eth to wallet from helper account
-    await sendEth(Helper , idetails.wallet , '100');
-
+    /// send eth from wallet to user
+    const trans = await exec(User.address , '10' , '0x00000000' , entrypoint , factory , paymaster , Provider , User , Bundler )
 
     console.log('-------------------------------------------------------------------------------------')
     console.log('-------------------------------------------------------------------------------------')
     /// Get account details after setup
     const fetails = await accountDetails(User , factory , Provider)
-    console.log('The wallet details after setup are')
+    console.log('The wallet details after transaction are')
     console.log(fetails)
 
 }

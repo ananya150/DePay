@@ -1,4 +1,4 @@
-// const {HELPER , USER , PROVIDER} = require('../accounts/account')
+const {HELPER , USER , PROVIDER , BUNDLER, PAYMASTER} = require('../accounts/account')
 /// ETh functions
 
 // gives the balace of an address
@@ -31,21 +31,12 @@ const sendTx = async (signer , to , value , data) => {
 }
 
 // async function test() {
-//     const provider = PROVIDER()
-//     const sender = (await HELPER());
-//     const receiver = (await USER()).address
-//     console.log('Before Transaction')
-//     console.log(await getBalance(sender.address , provider))
-//     console.log(await getBalance(receiver , provider));
-
-//     await sendEth(sender, receiver , '1')
-
-//     console.log('After Transaction')
-//     console.log(await getBalance(sender.address , provider))
-//     console.log(await getBalance(receiver , provider));
+//     const balance = await getBalance((await PAYMASTER()).address , PROVIDER())
+//     console.log(balance);
 // }
 
 // test()
+
 
 /// ERC-20 functions
 
