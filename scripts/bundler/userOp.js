@@ -1,17 +1,9 @@
 const { ethers } = require("ethers");
 const utils = require("ethers/lib/utils");
-const fs = require('fs');
-const {PROVIDER , USER} = require('../general/accounts');
 
-const getUserOp = async (calldata) => {
+const getUserOp = async (calldata , entrypoint , factory , paymaster , provider , signer) => {
 
-    const paymaster = fs.readFileSync('../setup/.paymaster').toString()
-    const entrypoint = fs.readFileSync('../setup/.entrypoint').toString()
-    const factory = fs.readFileSync('../setup/.factory').toString()
-
-    const signer = (await USER());
     const owner = signer.address;
-    const provider = PROVIDER();
     const wallet = await getContractAddress(factory , owner , provider);
 
     const op = await getUnsignedUserOp(wallet , provider , factory , owner , calldata , entrypoint);
@@ -31,9 +23,6 @@ const getContractAddress = async (factory , owner , provider) => {
     })
     return "0x" + address.substring(address.length - 40);
 }
-
-module.exports = {getUserOp , getContractAddress , getNonce}
-
 
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -64,6 +53,8 @@ const calcNonce = async (address , provider) => {
 const getNonce = async (address , provider) => {
     return await calcNonce(address , provider)
 }
+
+module.exports = {getUserOp , getContractAddress , getNonce}
 
 const getInitCode = async (wallet, factory , owner , salt , provider) => {
     const senderAddressCode = await provider.getCode(wallet);
